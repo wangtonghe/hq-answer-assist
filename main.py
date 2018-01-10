@@ -17,8 +17,8 @@ def main():
     right_bottom_y = 380
 
     # 1. 截图
-    # os.system('adb shell screencap -p /sdcard/answer.png')
-    # os.system('adb pull /sdcard/answer.png answer.png')
+    os.system('adb shell screencap -p /sdcard/answer.png')
+    os.system('adb pull /sdcard/answer.png answer.png')
 
     # 2. 截取题目并文字识别
     image = Image.open('answer.png')
