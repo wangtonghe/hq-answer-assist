@@ -8,7 +8,7 @@ left_top_y = 200
 right_bottom_x = 680
 right_bottom_y = 930
 
-negate_word = ['没有', '不是', '不会', '不']
+negate_word = ['没有', '不是', '不会']
 
 auxiliary_word = ['下列', '以下']
 
@@ -16,13 +16,13 @@ auxiliary_word = ['下列', '以下']
 def image_to_str():
     # 1. 截图
     os.system('adb shell screencap -p /sdcard/answer.png')
-    os.system('adb pull /sdcard/answer.png answer.png')
+    os.system('adb pull /sdcard/answer.png image/answer.png')
 
     # 2. 截取题目并文字识别
-    image = Image.open('answer.png')
+    image = Image.open('image/answer.png')
     crop_img = image.crop(
         (left_top_x, left_top_y, right_bottom_x, right_bottom_y))
-    crop_img.save('crop.png')
+    crop_img.save('image/crop.png')
     text = pytesseract.image_to_string(crop_img, lang='chi_sim')
     return text
 
@@ -31,12 +31,13 @@ def get_question(text):
     options = ''
     option_arr = []
     question = ''
-    text_arr = text.split('?')
+    text_arr = text.split('\n\n')
     if len(text_arr) > 0:
         question = text_arr[0]
         question = question.strip()
         if len(text_arr) > 1:
-            options = text_arr[1]
+            for opt in text_arr[1:]:
+                options += '\n' + opt
     if options is not None:
         option_arr_o = options.split('\n')
         print('原始选项：{}'.format(option_arr_o))

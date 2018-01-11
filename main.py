@@ -10,9 +10,6 @@ DEFAULT_HEIGHT = 1280
 def main():
     text = analyze.image_to_str()  # 图片转文字
     question, option_arr, is_negative = analyze.get_question(text)  # 得到题目、选项及题目正反
-    # is_negative = False
-    # option_arr = ['法国', '美国', '英国']
-    # question = '“戛纳国际电影节”在哪一个国家举办的？'
     result_list = []
 
     wd = urllib.request.quote(question)
