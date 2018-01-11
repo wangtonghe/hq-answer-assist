@@ -8,12 +8,12 @@ left_top_y = 200
 right_bottom_x = 680
 right_bottom_y = 930
 
-negate_word = ['没有', '不是', '不会']
+negate_word = ['没有', '不是', '不会', '不']
 
 auxiliary_word = ['下列', '以下']
 
 
-def get_question():
+def image_to_str():
     # 1. 截图
     os.system('adb shell screencap -p /sdcard/answer.png')
     os.system('adb pull /sdcard/answer.png answer.png')
@@ -24,7 +24,10 @@ def get_question():
         (left_top_x, left_top_y, right_bottom_x, right_bottom_y))
     crop_img.save('crop.png')
     text = pytesseract.image_to_string(crop_img, lang='chi_sim')
-    # print(text)
+    return text
+
+
+def get_question(text):
     options = ''
     option_arr = []
     question = ''
@@ -56,14 +59,16 @@ def get_question():
 def get_result(result_list, option_arr, question, is_negate):
     answer_num = len(result_list)
     op_num = len(option_arr)
-    source_arr = []
+    source_arr = []  # 记录各选项得分
     for i in range(0, op_num):
         source_arr.append(0)
     for i in range(0, answer_num):
         result = result_list[i]
         for j in range(0, op_num):
             op = option_arr[j]
-            source_arr[j] += result.count(op)
+            if op in result:  # 选项在答案中出现一次，加10分
+                source_arr[j] += 10
+
     if max(source_arr) == 0:
         return None
     if is_negate:
