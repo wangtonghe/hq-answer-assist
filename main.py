@@ -1,6 +1,3 @@
-import os
-from PIL import Image
-import pytesseract
 from urllib.request import urlopen
 import urllib.request
 from bs4 import BeautifulSoup
@@ -11,11 +8,11 @@ DEFAULT_HEIGHT = 1280
 
 
 def main():
-    # text = analyze.image_to_str()  # 图片转文字
-    # question, option_arr, is_negative = analyze.get_question(text)  # 得到题目、选项及题目正反
-    is_negative = False
-    option_arr = ['巴金', '老舍', '余秋雨']
-    question = '长篇小说《骆驼祥子》的作者是以下哪位?'
+    text = analyze.image_to_str()  # 图片转文字
+    question, option_arr, is_negative = analyze.get_question(text)  # 得到题目、选项及题目正反
+    # is_negative = False
+    # option_arr = ['法国', '美国', '英国']
+    # question = '“戛纳国际电影节”在哪一个国家举办的？'
     result_list = []
 
     wd = urllib.request.quote(question)
@@ -41,7 +38,10 @@ def main():
                     print(result_dd)
 
     best_result = analyze.get_result(result_list, option_arr, question, is_negative)
-    print('最佳答案是： \033[1;31m{}\033[0m'.format(best_result))
+    if best_result is None:
+        print('\n没有答案')
+    else:
+        print('最佳答案是： \033[1;31m{}\033[0m'.format(best_result))
 
 
 if __name__ == '__main__':

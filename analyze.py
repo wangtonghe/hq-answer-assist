@@ -35,7 +35,8 @@ def get_question(text):
     if len(text_arr) > 0:
         question = text_arr[0]
         question = question.strip()
-        options = text_arr[1]
+        if len(text_arr) > 1:
+            options = text_arr[1]
     if options is not None:
         option_arr_o = options.split('\n')
         print('原始选项：{}'.format(option_arr_o))
@@ -69,7 +70,7 @@ def get_result(result_list, option_arr, question, is_negate):
             if op in result:  # 选项在答案中出现一次，加10分
                 source_arr[j] += 10
 
-    if max(source_arr) == 0:
+    if len(source_arr) == 0 or max(source_arr) == 0:
         return None
     if is_negate:
         best_index = min(source_arr)
