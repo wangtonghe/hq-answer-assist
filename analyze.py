@@ -25,9 +25,11 @@ opt_aux_word = ['《', '》']
 
 
 # 分辨答题页面,若是返回图片对象
-def tell_and_get_image():
+def tell_and_get_image(is_auto):
     os.system('adb shell screencap -p /sdcard/backup.png')
     os.system('adb pull /sdcard/backup.png image/backup.png')
+    if is_auto:
+        return Image.open('image/backup.png')
     backup_img = Image.open('image/backup.png')
     start_720_point = judge_width_720_start, judge_height_1280_start
     height_1280_point = judge_width_720_end, judge_height_1280_end

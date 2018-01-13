@@ -46,7 +46,7 @@ def main():
 
     while True:
         while True:
-            img = analyze.tell_and_get_image()
+            img = analyze.tell_and_get_image(is_auto)
             if img is not None:
                 break
             if is_auto:
