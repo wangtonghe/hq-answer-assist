@@ -5,7 +5,8 @@ HQ类答题游戏辅助（python）
 
 如百万英雄、冲顶大会、芝士超人等HQ类答题游戏辅助，可帮你搜索并匹配答案。原理同前一阵大火的[跳一跳辅助](https://github.com/wangshub/wechat_jump_game)类似，将答题页面截图，然后使用图片识别功能转成文字，再放到百度去搜索。
 
-截图使用的是adb,所以目前仅支持android。图片识别使用 [tesseract-orc](https://github.com/tesseract-ocr/tesseract)。
+截图使用的是adb,所以目前仅支持android。图片识别有 [tesseract-orc](https://github.com/tesseract-ocr/tesseract)和百度ocr两种方式，
+相对来说百度ocr识别率高，不过有次数限制，而tesseract识别率稍低些，你可以根据自己情况选择。
 
 具体思路如下：
 
@@ -57,21 +58,20 @@ HQ类答题游戏辅助（python）
 安装教程可百度，Mac安装教程[在这里](http://blog.csdn.net/u010670689/article/details/78374623),其他系统可做参考。
 
 
-已集成百度OCR,识别效果比不经训练的tesseract-ocr要准确。需在百度云创建应用，具体见[百度云文字识别文档](https://cloud.baidu.com/doc/OCR/OCR-Python-SDK.html#.E9.85.8D.E7.BD.AEAipOcr)
-使用百度云OCR需在配置文件`config.json`中配置如下：
+使用百度OCR需在百度云创建应用，具体见[百度云文字识别文档](https://cloud.baidu.com/doc/OCR/OCR-Python-SDK.html#.E9.85.8D.E7.BD.AEAipOcr)。
+然后在配置文件`config.json`中配置`baidu_ocr`及`baidu_ocr_config`。
 
 ```json
 {
   "auto": true,
-  "baidu_ocr": true,  //  启用百度云OCR
-  "baidu_ocr_config": { //  百度云OCR配置 
+  "baidu_ocr": true, 
+  "baidu_ocr_config": { 
     "app_id": "xxx",
     "api_ley": "xxx",
     "secret_key": "xxx"
   }
 }
 ```
-
 
 答题时使用USB线连接PC,开启调试模式。目前有两种运行方式：手动和自动。默认为自动。配置在`config.json`中。将`auto`设置`false`则为手动。
 
@@ -94,8 +94,6 @@ HQ类答题游戏辅助（python）
 
 ![](http://blog.wthfeng.com/img/posts/resource/answer/answer3.png)
 
-虽然题目没有百分百识别成功，不过只要有主要关键字即可。
-
 
 
 ## 适配支持
@@ -104,15 +102,13 @@ HQ类答题游戏辅助（python）
 
 ```json
 
-{
-  // 题目及选项区域，(x1,y1)为左上点左边，(x2,y2)为右下点坐标，由此组成的矩形区域
+{ 
   "question_area": {
     "x1": 23,
     "y1": 150,
     "x2": 510,
     "y2": 600
   },
-  // 答题页面上方特有的白条区域，用于判断是否为答题页面
   "blank_area": {
     "x1": 75,
     "y1": 150,
@@ -122,17 +118,18 @@ HQ类答题游戏辅助（python）
 }
 
 ```
-`blank_area`表示的区域如下所示：
+
+参数说明：
+`question_area`为 题目及选项区域，(x1,y1)为左上点左边，(x2,y2)为右下点坐标，由此组成的矩形区域。
+ `blank_area`表示答题页面上方特有的白条区域，用于在自动模式下判断是否为答题页面。表示的区域如下所示：
 
 
 ![](http://blog.wthfeng.com/img/posts/resource/answer/answer4.png)
 
 
-
-
-
 ## 其他补充
 
+经测试对百万英雄支持度稍高，其他次之。
 
 tesseract识别文字偶尔会有误差。可训练以提高。
 
