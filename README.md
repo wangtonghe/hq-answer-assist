@@ -50,15 +50,15 @@ HQ类答题游戏辅助（python）
 4. 文字识别引擎[tesseract-ocr](https://github.com/tesseract-ocr/tesseract)及中文简体语言包[chi_sim.traineddata](https://github.com/tesseract-ocr/tessdata/blob/master/chi_sim.traineddata),安装教程可百度，Mac安装教程[在这里](http://blog.csdn.net/u010670689/article/details/78374623),其他系统可做参考。
 
 
-答题时使用USB线连接PC,开启调试模式。目前有两种运行方式：手动和自动。默认为手动。配置在`config.json`中。将`auto`设置`true`则为自动。
+答题时使用USB线连接PC,开启调试模式。目前有两种运行方式：手动和自动。默认为自动。配置在`config.json`中。将`auto`设置`false`则为手动。
 
 ### 手动
 
-每次手机画面出现答题页面，执行`python main.py`命令。
+每次手机画面出现答题页面，手动执行`python3 main.py`命令。
 
 ### 自动
 
-直接运行`python main.py`即可。程序会自主判断是否为答题页面。判断成功后自动图片识别并搜索。搜索出答案后停留10秒继续循环判断。
+直接运行`python3 main.py`即可。程序会自主判断是否为答题页面。判断成功后自动图片识别并搜索。搜索出答案后停留10秒继续循环判断。目前每0.5秒判断一次。
 
 
 ## 结果展示
