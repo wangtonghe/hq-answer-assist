@@ -4,16 +4,6 @@ import pytesseract
 import utils
 import baiduocr
 
-'''
-分辨率配置如下两部分坐标。
-body_width_default开头的参数为题目及选项区域坐标。具体
-(body_width_default_start,body_height_default_start)为左上点坐标。
-(body_width_default_end,body_height_default_end)为右下点左边。由此截出题目及选项区域。
-
-judge_width_default开头参数配置含义同上，为答题页面的一条白条区域，由此区别是否为答题页面
-
-'''
-
 negate_word = ['没有', '不是', '不会', '不包括', '不属于']
 
 auxiliary_word = ['下列', '以下']
@@ -23,7 +13,7 @@ opt_aux_word = ['《', '》']
 
 # 分辨是否为答题页面,若是则返回图片对象
 def tell_and_get_image(is_auto, black_point):
-    # utils.pull_from_screen()  # 截图
+    utils.pull_from_screen()  # 截图
     if not is_auto:
         if os.path.exists('image/backup.png'):
             return Image.open('image/backup.png')
@@ -140,12 +130,3 @@ def get_result(result_list, option_arr, question, is_negate):
     for num in source_arr:
         print(num)
     return best_result
-
-
-# 获取各手机实际像素点
-def get_pixel_by_size(area, size):
-    x, y = area
-    width, height = size
-    new_x = x * width / default_width
-    new_y = y * height / default_height
-    return int(new_x), int(new_y)
