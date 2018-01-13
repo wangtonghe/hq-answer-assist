@@ -34,3 +34,28 @@ def search_zhidao(question):
                 if index < 3:
                     print(result_dd)
     return result_list
+
+
+def get_result(result_list, option_arr, question, is_negate):
+    answer_num = len(result_list)
+    op_num = len(option_arr)
+    source_arr = []  # 记录各选项得分
+    for i in range(0, op_num):
+        source_arr.append(0)
+    for i in range(0, answer_num):
+        result = result_list[i]
+        for j in range(0, op_num):
+            op = option_arr[j]
+            if op in result:  # 选项在答案中出现一次，加10分
+                source_arr[j] += 10
+
+    if len(source_arr) == 0 or max(source_arr) == 0:
+        return None
+    if is_negate:
+        best_index = min(source_arr)
+    else:
+        best_index = max(source_arr)
+    best_result = option_arr[source_arr.index(best_index)]
+    for num in source_arr:
+        print(num)
+    return best_result

@@ -1,6 +1,8 @@
 import os
 from PIL import Image
 import pytesseract
+import utils
+import baiduocr
 
 '''
 分辨率配置如下两部分坐标。
@@ -10,25 +12,7 @@ body_width_default开头的参数为题目及选项区域坐标。具体
 
 judge_width_default开头参数配置含义同上，为答题页面的一条白条区域，由此区别是否为答题页面
 
-
-
 '''
-
-# 720*1280分辨率坐标下题目及选项区域
-body_width_default_start = 30
-body_height_default_start = 200
-body_width_default_end = 680
-body_height_default_end = 800
-
-# 720*1280分辨率下此区域是一片白色，
-# 以此判断是否是答题页面
-judge_width_default_start = 100
-judge_width_default_end = 600
-judge_height_default_start = 200
-judge_height_default_end = 250
-
-default_width = 720
-default_height = 1280
 
 negate_word = ['没有', '不是', '不会', '不包括', '不属于']
 
@@ -37,17 +21,16 @@ auxiliary_word = ['下列', '以下']
 opt_aux_word = ['《', '》']
 
 
-# 分辨答题页面,若是返回图片对象
-def tell_and_get_image(is_auto):
-    os.system('adb shell screencap -p /sdcard/backup.png')
-    os.system('adb pull /sdcard/backup.png image/backup.png')
+# 分辨是否为答题页面,若是则返回图片对象
+def tell_and_get_image(is_auto, black_point):
+    # utils.pull_from_screen()  # 截图
     if not is_auto:
-        return Image.open('image/backup.png')
+        if os.path.exists('image/backup.png'):
+            return Image.open('image/backup.png')
+        print('image/backup.png位置图片不存在，请检查图片位置及adb安装情况')
+        exit(-1)
     backup_img = Image.open('image/backup.png')
-    start_720_point = judge_width_default_start, judge_height_default_start
-    height_1280_point = judge_width_default_end, judge_height_default_end
-    start_x, start_y = get_pixel_by_size(start_720_point, backup_img.size)
-    end_x, end_y = get_pixel_by_size(height_1280_point, backup_img.size)
+    start_x, start_y, end_x, end_y = black_point
 
     is_answer_page = False
     is_end = False
@@ -61,25 +44,38 @@ def tell_and_get_image(is_auto):
                 break
         if is_end:
             break
-
     if is_answer_page:
-        backup_img.save('image/backup.png')
         return backup_img
     else:
         backup_img.close()
         return None
 
 
-def image_to_str(image):
-    # 2. 截取题目并文字识别
-    start_720_point = body_width_default_start, body_height_default_start
-    height_1280_point = body_width_default_end, body_height_default_end
-    start_x, start_y = get_pixel_by_size(start_720_point, image.size)
-    end_x, end_y = get_pixel_by_size(height_1280_point, image.size)
-    crop_img = image.crop((start_x, start_y, end_x, end_y))
-    crop_img.save('image/crop.png')
-    text = pytesseract.image_to_string(crop_img, lang='chi_sim')
-    return text
+# 截取题目并文字识别
+def image_to_str(image_obj, is_baidu_ocr, client):
+    image, name = image_obj
+    if is_baidu_ocr and client is not None:
+        question, option_arr = baidu_ocr(name, client)
+    else:
+        question, option_arr = tesseract_orc(image)
+    question, is_negative = analyze_question(question)
+    return question, option_arr, is_negative
+
+
+# 使用 tesseract_orc识别
+def tesseract_orc(image):
+    text = pytesseract.image_to_string(image, lang='chi_sim')
+    return get_question(text)
+
+
+# 使用百度ocr识别
+def baidu_ocr(name, client):
+    try:
+        text = baiduocr.image_to_str(name, client)
+        return text
+    except RuntimeError:
+        print('请确保百度OCR配置正确')
+        exit(-1)
 
 
 def get_question(text):
@@ -106,7 +102,11 @@ def get_question(text):
                 print(op)
     print(question)
     print(option_arr)
+    return question, option_arr
 
+
+# 分析题目，去掉否定词及无关词，得到题目所求答案正反
+def analyze_question(question):
     extra_word = negate_word + auxiliary_word
     is_negate = False
     for ele in extra_word:
@@ -114,7 +114,7 @@ def get_question(text):
             is_negate = True
         if ele in question:
             question = question.replace(ele, '')
-    return question, option_arr, is_negate
+    return question, is_negate
 
 
 def get_result(result_list, option_arr, question, is_negate):

@@ -20,11 +20,15 @@ HQ类答题游戏辅助（python）
 ```
 --- hq-answer-assist(根目录)
 
+   --- config(屏幕分辨率配置目录)
+
    --- image （图片目录）
   
    --- .gitignore
   
-   --- analyze.py (文字识别函数)
+   --- analyze.py (文字识别功能)
+   
+   --- baiduocr.py (百度OCR集成)
   
    --- config.json(配置文件)
   
@@ -33,8 +37,10 @@ HQ类答题游戏辅助（python）
    --- main.py(主函数)
   
    --- README.md
-  
+   
    --- search.py(搜索函数)
+   
+   --- utils.py (工具函数)
   
 ```
 
@@ -46,8 +52,25 @@ HQ类答题游戏辅助（python）
 
 1. python运行环境
 2. android调试工具[ADB](https://developer.android.com/studio/command-line/adb.html?hl=zh-cn),安装Android SDK后可在android_sdk/platform-tools/中找到。其他安装方式百度即可。
-3. python若干类库：PIL(图片库)、BeautifulSoup(网页解析库)、pytesseract（图片文字识别库）。可使用python的pip安装
-4. 文字识别引擎[tesseract-ocr](https://github.com/tesseract-ocr/tesseract)及中文简体语言包[chi_sim.traineddata](https://github.com/tesseract-ocr/tessdata/blob/master/chi_sim.traineddata),安装教程可百度，Mac安装教程[在这里](http://blog.csdn.net/u010670689/article/details/78374623),其他系统可做参考。
+3. python若干类库：PIL(图片库)、BeautifulSoup(网页解析库)、pytesseract（图片文字识别库）、baidu-aip（百度ocr库）。可使用python的pip安装
+4. 文字识别引擎（可选,若使用百度云OCR可不安装）[tesseract-ocr](https://github.com/tesseract-ocr/tesseract)及中文简体语言包[chi_sim.traineddata](https://github.com/tesseract-ocr/tessdata/blob/master/chi_sim.traineddata),
+安装教程可百度，Mac安装教程[在这里](http://blog.csdn.net/u010670689/article/details/78374623),其他系统可做参考。
+
+
+已集成百度OCR,识别效果比不经训练的tesseract-ocr要准确。需在百度云创建应用，具体见[百度云文字识别文档](https://cloud.baidu.com/doc/OCR/OCR-Python-SDK.html#.E9.85.8D.E7.BD.AEAipOcr)
+使用百度云OCR需在配置文件`config.json`中配置如下：
+
+```json
+{
+  "auto": true,
+  "baidu_ocr": true,  //  启用百度云OCR
+  "baidu_ocr_config": { //  百度云OCR配置 
+    "app_id": "xxx",
+    "api_ley": "xxx",
+    "secret_key": "xxx"
+  }
+}
+```
 
 
 答题时使用USB线连接PC,开启调试模式。目前有两种运行方式：手动和自动。默认为自动。配置在`config.json`中。将`auto`设置`false`则为手动。
@@ -77,9 +100,33 @@ HQ类答题游戏辅助（python）
 
 ## 适配支持
 
-目前支持分辨率为`720*1280`和`1080*1920`等宽高比为0.5625的手机。其他分辨率手机需自动配置。
+屏幕分辨率适配在`config/`目录下，目前支持`540x960`、`720x1280`、`1080x1920`等分辨率。若没有你手机的分辨率。可在此目录下添加对应文件。格式如下
 
-其他分辨率可在analyze.py配置。详见analyze.py注释。
+```json
+
+{
+  // 题目及选项区域，(x1,y1)为左上点左边，(x2,y2)为右下点坐标，由此组成的矩形区域
+  "question_area": {
+    "x1": 23,
+    "y1": 150,
+    "x2": 510,
+    "y2": 600
+  },
+  // 答题页面上方特有的白条区域，用于判断是否为答题页面
+  "blank_area": {
+    "x1": 75,
+    "y1": 150,
+    "x2": 450,
+    "y2": 600
+  }
+}
+
+```
+`blank_area`表示的区域如下所示：
+
+
+![](http://blog.wthfeng.com/img/posts/resource/answer/answer4.png)
+
 
 
 

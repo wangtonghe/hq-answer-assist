@@ -5,6 +5,7 @@ import time
 import sys
 import analyze
 import search
+import utils
 
 '''
 主要思路：
@@ -19,12 +20,18 @@ import search
 '''
 
 
-# 检查adb是否安装
+# 检查adb是否安装,获取屏幕大小
 def check_os():
     size_str = os.popen('adb shell wm size').read()
     if not size_str:
         print('请安装ADB,并打开调试模式')
         sys.exit()
+    else:
+        size_x_y = size_str.split(':')[1].strip()
+        x, y = size_x_y.split('x')
+        size = x, y
+        size = 1440, 2560
+        return size
 
 
 # 获取配置文件
@@ -40,33 +47,46 @@ def get_config():
 
 def main():
     pro_start = datetime.datetime.now()
-    check_os()
+    size = check_os()
     config = get_config()
     is_auto = config['auto']
+    is_baidu_ocr = config['baidu_ocr']
+    baidu_ocr_clint = None
+    if is_baidu_ocr:
+        baidu_cor_config = config['baidu_ocr_config']
+        baidu_ocr_clint = utils.init_baidu_ocr(baidu_cor_config)
+    pixel_json = utils.get_pixel_config(size)
+    blank_area = pixel_json['blank_area']
+    question_area = pixel_json['question_area']
+
+    blank_area_point = blank_area['x1'], blank_area['y1'], blank_area['x2'], blank_area['y2']
+    question_area_point = question_area['x1'], question_area['y1'], question_area['x2'], question_area['y2']
+
     question_num = 0
+    crop_img_name = 'image/crop.png'
+
     while True:
         while True:
-            img = analyze.tell_and_get_image(is_auto)
+            img = analyze.tell_and_get_image(is_auto, blank_area_point)
             if img is not None:
-                question_num = + 1
-                img.save('image/answer{}.png'.format(question_num))
+                question_num += 1
                 break
-            else:
+            else:  # 若不是答题页
+                if not is_auto:
+                    print('没有发现题目页面')
+                    exit(-1)
                 print('没有发现答题页面，继续')
-            if not is_auto:
-                print('没有发现题目页面')
-                exit(-1)
-            time.sleep(0.5)  # 不是题目页面，休眠1秒后继续判断
+                time.sleep(0.5)  # 不是题目页面，休眠0.5秒后继续判断
+
         # 获取题目及选项
-        start = datetime.datetime.now()  # 开始时间
-        text = analyze.image_to_str(img)  # 图片转文字
-        question, option_arr, is_negative = analyze.get_question(text)  # 得到题目、选项及题目正反
+        start = datetime.datetime.now()  # 记录开始时间
+        crop_img = utils.crop_image(img, question_area_point, crop_img_name)
+        question, option_arr, is_negative = analyze.image_to_str(crop_img, is_baidu_ocr, baidu_ocr_clint)  # 图片转文字
         if question is None or question == '':
             print('\n没有识别题目')
-            return
         result_list = search.search(question)  # 搜索结果
 
-        best_result = analyze.get_result(result_list, option_arr, question, is_negative)  # 分析结果
+        best_result = search.get_result(result_list, option_arr, question, is_negative)  # 分析结果
         if best_result is None:
             print('\n没有答案')
         else:
@@ -79,6 +99,8 @@ def main():
             break
     total_time = (datetime.datetime.now() - pro_start).seconds
     print('脚本运行共运行{}秒'.format(total_time))
+    img.save('image/answer{}.png'.format(question_num))
+    img.close()
 
 
 if __name__ == '__main__':
