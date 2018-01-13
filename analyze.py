@@ -2,17 +2,30 @@ import os
 from PIL import Image
 import pytesseract
 
-# 720*1280分辨率坐标下题目及选项区域
-body_width_720_start = 30
-body_height_1280_start = 200
-body_width_720_end = 680
-body_height_1280_end = 800
+'''
+分辨率配置如下两部分坐标。
+body_width_default开头的参数为题目及选项区域坐标。具体
+(body_width_default_start,body_height_default_start)为左上点坐标。
+(body_width_default_end,body_height_default_end)为右下点左边。由此截出题目及选项区域。
 
-# 720*1280分辨率下此区域是一片白色，以此判断是否是答题页面
-judge_width_720_start = 100
-judge_width_720_end = 600
-judge_height_1280_start = 200
-judge_height_1280_end = 250
+judge_width_default开头参数配置含义同上，为答题页面的一条白条区域，由此区别是否为答题页面
+
+
+
+'''
+
+# 720*1280分辨率坐标下题目及选项区域
+body_width_default_start = 30
+body_height_default_start = 200
+body_width_default_end = 680
+body_height_default_end = 800
+
+# 720*1280分辨率下此区域是一片白色，
+# 以此判断是否是答题页面
+judge_width_default_start = 100
+judge_width_default_end = 600
+judge_height_default_start = 200
+judge_height_default_end = 250
 
 default_width = 720
 default_height = 1280
@@ -28,11 +41,11 @@ opt_aux_word = ['《', '》']
 def tell_and_get_image(is_auto):
     os.system('adb shell screencap -p /sdcard/backup.png')
     os.system('adb pull /sdcard/backup.png image/backup.png')
-    if is_auto:
+    if not is_auto:
         return Image.open('image/backup.png')
     backup_img = Image.open('image/backup.png')
-    start_720_point = judge_width_720_start, judge_height_1280_start
-    height_1280_point = judge_width_720_end, judge_height_1280_end
+    start_720_point = judge_width_default_start, judge_height_default_start
+    height_1280_point = judge_width_default_end, judge_height_default_end
     start_x, start_y = get_pixel_by_size(start_720_point, backup_img.size)
     end_x, end_y = get_pixel_by_size(height_1280_point, backup_img.size)
 
@@ -41,7 +54,7 @@ def tell_and_get_image(is_auto):
     for w in range(start_x, end_x, 100):  # 根据颜色判断是否是题目页面
         for h in range(start_y, end_y, 10):
             pixel = backup_img.getpixel((w, h))  # 获取像素点
-            r, y, b, a = pixel
+            r, y, b = pixel[0], pixel[1], pixel[2]
             is_answer_page = r == 0xff and y == 0xff and b == 0xff
             if not is_answer_page:
                 is_end = True
@@ -59,8 +72,8 @@ def tell_and_get_image(is_auto):
 
 def image_to_str(image):
     # 2. 截取题目并文字识别
-    start_720_point = body_width_720_start, body_height_1280_start
-    height_1280_point = body_width_720_end, body_height_1280_end
+    start_720_point = body_width_default_start, body_height_default_start
+    height_1280_point = body_width_default_end, body_height_default_end
     start_x, start_y = get_pixel_by_size(start_720_point, image.size)
     end_x, end_y = get_pixel_by_size(height_1280_point, image.size)
     crop_img = image.crop((start_x, start_y, end_x, end_y))
@@ -76,7 +89,7 @@ def get_question(text):
     text_arr = text.split('\n\n')
     if len(text_arr) > 0:
         question = text_arr[0]
-        question = question.strip()
+        question = question.strip()[2:]
         if len(text_arr) > 1:
             for opt in text_arr[1:]:
                 options += '\n' + opt

@@ -23,7 +23,7 @@ import search
 def check_os():
     size_str = os.popen('adb shell wm size').read()
     if not size_str:
-        print('请安装ADB调试工具')
+        print('请安装ADB,并打开调试模式')
         sys.exit()
 
 
@@ -40,7 +40,7 @@ def get_config():
 
 def main():
     pro_start = datetime.datetime.now()
-    check_os()
+    # check_os()
     config = get_config()
     is_auto = config['auto']
 
@@ -57,6 +57,9 @@ def main():
         start = datetime.datetime.now()  # 开始时间
         text = analyze.image_to_str(img)  # 图片转文字
         question, option_arr, is_negative = analyze.get_question(text)  # 得到题目、选项及题目正反
+        if question is None or question == '':
+            print('\n没有识别题目')
+            return
         result_list = search.search(question)  # 搜索结果
 
         best_result = analyze.get_result(result_list, option_arr, question, is_negative)  # 分析结果
