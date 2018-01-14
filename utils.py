@@ -42,6 +42,19 @@ def pull_from_screen():
         pull_from_screen()  # 递归调用，直到找到截图方式
 
 
+# 检查adb是否安装,获取屏幕大小
+def check_os():
+    size_str = os.popen('adb shell wm size').read()
+    if not size_str:
+        print('请安装ADB,并打开调试模式')
+        exit(-1)
+    else:
+        size_x_y = size_str.split(':')[1].strip()
+        x, y = size_x_y.split('x')
+        size = x, y
+        return size
+
+
 # 获取分辨率配置文件
 def get_pixel_config(size):
     width, height = size
