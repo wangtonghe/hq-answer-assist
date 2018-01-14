@@ -27,7 +27,7 @@ def init_baidu_ocr(baidu_ocr_config):
 #  'log_id': 916087026228727188, 'words_result_num': 5}
 
 def get_question_and_options(text):
-    if text['error_code'] is not None:
+    if 'error_code' in text:
         print('请确保百度OCR配置正确')
         exit(-1)
     if text['words_result_num'] == 0:
@@ -41,6 +41,7 @@ def get_question_and_options(text):
     options = result_arr[2:]
     for opt in options:
         option_arr.append(opt['words'])
+    ques_str = ques_str[2:]  # 去掉题号
     print(ques_str)
     print(option_arr)
     return ques_str, option_arr
