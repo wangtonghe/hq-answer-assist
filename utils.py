@@ -2,18 +2,44 @@
 import subprocess
 import os
 import json
+from PIL import Image
 import baiduocr
+
+shot_way = 3
+
+
+# 具体截图方法，按优先级排序
+def shot_screen():
+    global shot_way
+    if 1 <= shot_way <= 3:
+        process = subprocess.Popen(
+            'adb shell screencap -p',
+            shell=True, stdout=subprocess.PIPE)
+        binary_img = process.stdout.read()
+        if shot_way == 2:
+            binary_img = binary_img.replace(b'\r\n', b'\n')
+        elif shot_way == 1:
+            binary_img = binary_img.replace(b'\r\r\n', b'\n')
+        f = open('image/backup.png', 'wb')
+        f.write(binary_img)
+        f.close()
+    elif shot_way == 0:
+        os.system('adb shell screencap -p /sdcard/answer_backup.png')
+        os.system('adb pull /sdcard/answer_backup.png image/backup.png')
 
 
 # 屏幕截图，参考 跳一跳截图方法 https://github.com/wangshub/wechat_jump_game/blob/master/common/screenshot.py
 def pull_from_screen():
-    process = subprocess.Popen(
-        'adb shell screencap -p',
-        shell=True, stdout=subprocess.PIPE)
-    binary_screenshot = process.stdout.read()
-    f = open('image/backup.png', 'wb')
-    f.write(binary_screenshot)
-    f.close()
+    global shot_way
+    if shot_way < 0:
+        print('暂不支持当前设备')
+        exit(-1)
+    shot_screen()
+    try:
+        Image.open('image/backup.png').load()
+    except FileNotFoundError:
+        shot_way -= 1
+        pull_from_screen()  # 递归调用，直到找到截图方式
 
 
 # 获取分辨率配置文件

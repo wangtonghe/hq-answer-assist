@@ -15,12 +15,14 @@ opt_aux_word = ['《', '》']
 # 分辨是否为答题页面,若是则返回图片对象
 def tell_and_get_image(is_auto, black_point):
     utils.pull_from_screen()  # 截图
-    if not is_auto:
-        if os.path.exists('image/backup.png'):
-            return Image.open('image/backup.png')
-        print('image/backup.png位置图片不存在，请检查图片位置及adb安装情况')
+    backup_img = None
+    if os.path.exists('image/backup.png'):
+        backup_img = Image.open('image/backup.png')
+    else:
+        print('image/backup.png位置图片不存在')
         exit(-1)
-    backup_img = Image.open('image/backup.png')
+    if not is_auto:
+        return backup_img
     start_x, start_y, end_x, end_y = black_point
 
     is_answer_page = False

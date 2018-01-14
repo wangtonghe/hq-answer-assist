@@ -1,9 +1,9 @@
 {
-    "auto": false,
-    "baidu_ocr": false,
-    "baidu_ocr_config": {
-        "app_id": "xxx",
-        "api_ley": "xxx",
-        "secret_key": "xxx"
-    }
+  "auto": true,
+  "baidu_ocr": false,
+  "baidu_ocr_config": {
+    "app_id": "xxx",
+    "api_ley": "xxx",
+    "secret_key": "xxx"
+  }
 }

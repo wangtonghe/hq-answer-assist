@@ -31,7 +31,6 @@ def check_os():
         size_x_y = size_str.split(':')[1].strip()
         x, y = size_x_y.split('x')
         size = x, y
-        size = 1440, 2560
         return size
 
 
@@ -85,6 +84,7 @@ def main():
         question, option_arr, is_negative = analyze.image_to_str(crop_img, is_baidu_ocr, baidu_ocr_clint)  # 图片转文字
         if question is None or question == '':
             print('\n没有识别题目')
+            exit(-1)
         result_list = search.search(question)  # 搜索结果
 
         best_result = search.get_result(result_list, option_arr, question, is_negative)  # 分析结果
