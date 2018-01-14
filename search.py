@@ -1,3 +1,4 @@
+# coding=utf-8
 from urllib.request import urlopen
 import urllib.request
 from bs4 import BeautifulSoup
