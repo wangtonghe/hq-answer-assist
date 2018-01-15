@@ -34,7 +34,7 @@ def get_question_and_options(text):
         print('请确保百度OCR配置正确')
         exit(-1)
     if text['words_result_num'] == 0:
-        return None
+        return '', []
     result_arr = text['words_result']
     result_num = text['words_result_num']
     # 按照经验，4个结果为1行问题，5、6个为2行问题，6个以上为公布答案
