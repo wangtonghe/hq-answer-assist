@@ -21,8 +21,6 @@ import utils
 '''
 
 
-
-
 # 获取配置文件
 def get_config():
     config_file = 'config.json'
@@ -35,11 +33,11 @@ def get_config():
 
 
 def main():
-    pro_start = datetime.datetime.now()
     size = utils.check_os()
     config = get_config()
     is_auto = config['auto']
     is_baidu_ocr = config['baidu_ocr']
+    is_debug = config['debug']
     baidu_ocr_clint = None
     if is_baidu_ocr:
         baidu_cor_config = config['baidu_ocr_config']
@@ -65,12 +63,12 @@ def main():
                     print('没有发现题目页面')
                     exit(-1)
                 print('没有发现答题页面，继续')
-                time.sleep(0.5)  # 不是题目页面，休眠0.5秒后继续判断
+                time.sleep(0.8)  # 不是题目页面，休眠0.8秒后继续判断
 
         # 获取题目及选项
         start = datetime.datetime.now()  # 记录开始时间
-        crop_img = utils.crop_image(img, question_area_point, crop_img_name)
-        question, option_arr, is_negative = analyze.image_to_str(crop_img, is_baidu_ocr, baidu_ocr_clint)  # 图片转文字
+        crop_obj = utils.crop_image(img, question_area_point, crop_img_name)
+        question, option_arr, is_negative = analyze.image_to_str(crop_obj, is_baidu_ocr, baidu_ocr_clint)  # 图片转文字
         if question is None or question == '':
             print('\n没有识别题目')
             exit(-1)
@@ -83,14 +81,15 @@ def main():
             print('最佳答案是： \033[1;31m{}\033[0m'.format(best_result))
         run_time = (datetime.datetime.now() - start).seconds
         print('本次运行时间为：{}秒'.format(run_time))
+        crop_img = crop_obj[0]
+        if is_debug:
+            crop_img.save('image/question_{}.png'.format(question_num))
+        crop_img.close()
+        img.close()
         if is_auto:
             time.sleep(10)  # 每一道题结束，休息10秒
         else:
             break
-    total_time = (datetime.datetime.now() - pro_start).seconds
-    print('脚本运行共运行{}秒'.format(total_time))
-    img.save('image/answer{}.png'.format(question_num))
-    img.close()
 
 
 if __name__ == '__main__':

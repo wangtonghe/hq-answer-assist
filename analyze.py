@@ -9,8 +9,6 @@ negate_word = ['没有', '不是', '不会', '不包括', '不属于']
 
 auxiliary_word = ['下列', '以下']
 
-opt_aux_word = ['《', '》']
-
 
 # 分辨是否为答题页面,若是则返回图片对象
 def tell_and_get_image(is_auto, black_point):

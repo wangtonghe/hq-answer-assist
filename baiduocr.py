@@ -1,5 +1,8 @@
 # coding=utf-8
 from aip import AipOcr
+import re
+
+opt_aux_word = ['《', '》']
 
 
 def get_file_content(file):
@@ -33,15 +36,31 @@ def get_question_and_options(text):
     if text['words_result_num'] == 0:
         return None
     result_arr = text['words_result']
-    ques = result_arr[:2]
-    ques_str = ''
+    result_num = text['words_result_num']
+    # 按照经验，4个结果为1行问题，5、6个为2行问题，6个以上为公布答案
     option_arr = []
-    for word in ques:
-        ques_str += word['words']
-    options = result_arr[2:]
-    for opt in options:
-        option_arr.append(opt['words'])
-    ques_str = ques_str[2:]  # 去掉题号
-    print(ques_str)
+    question_str = ''
+    if result_num == 4:
+        question_obj = result_arr[:1]
+        options_obj = result_arr[1:]
+    elif result_num == 5 or result_num == 6:
+        question_obj = result_arr[:2]
+        options_obj = result_arr[2:]
+    else:
+        return '', []
+    for question in question_obj:
+        word = question['words']
+        word = re.sub('^\d+\.*', '', word)
+        question_str += word
+    for option in options_obj:
+        word = option['words']
+        if word.startswith('《'):
+            word = word[1:]
+        if word.endswith('》'):
+            word = word[:-1]
+        print(word)
+        option_arr.append(word)
+
+    print(question_str)
     print(option_arr)
-    return ques_str, option_arr
+    return question_str, option_arr
