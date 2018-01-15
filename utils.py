@@ -37,12 +37,10 @@ def pull_from_screen():
     shot_screen()
     try:
         Image.open('image/backup.png').load()
-    except FileNotFoundError:
-        shot_way -= 1
-        pull_from_screen()  # 递归调用，直到找到截图方式
-    except Exception:
+    except Exception:  # 递归调用，直到找到截图方式
         shot_way -= 1
         pull_from_screen()
+
 
 # 检查adb是否安装,获取屏幕大小
 def check_os():
