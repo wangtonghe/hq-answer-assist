@@ -5,5 +5,6 @@
     "app_id": "xxx",
     "api_ley": "xxx",
     "secret_key": "xxx"
-  }
+  },
+  "debug":false
 }
