@@ -58,8 +58,11 @@ HQ类答题游戏辅助（python）
 安装教程可百度，Mac安装教程[在这里](http://blog.csdn.net/u010670689/article/details/78374623),其他系统可做参考。
 
 
-使用百度OCR需在百度云创建应用，具体见[百度云文字识别文档](https://cloud.baidu.com/doc/OCR/OCR-Python-SDK.html#.E9.85.8D.E7.BD.AEAipOcr)。
+> 经测试，百度OCR识别度高且速度快，更推荐使用**
+
+使用百度OCR需在百度云创建应用，具体见[百度云文字识别文档](https://cloud.baidu.com/product/ocr)。
 然后在配置文件`config.json`中配置`baidu_ocr`及`baidu_ocr_config`。
+
 
 ```json
 {
@@ -126,6 +129,18 @@ HQ类答题游戏辅助（python）
 
 ![](http://blog.wthfeng.com/img/posts/resource/answer/answer4.png)
 
+
+## 征集活动
+
+由于部分题目及搜索原因，该辅助没有给出推荐答案，或是推荐错了，为方便今后改进，
+可在[Issues 6](https://github.com/wangtonghe/hq-answer-assist/issues/6)上贴出出错的问题，以便分析改进。
+优先选取本应搜索到但却失败的**知识性问题**。
+
+## 改进意见
+
+若大家有意见和建议，欢迎提出来一起探讨。多一个人参与项目才会更好。讨论地址 [Issues 7](https://github.com/wangtonghe/hq-answer-assist/issues/7)
+
+
 ## TODO
 
 1. 题目语义分析，只搜索题干关键字提高匹配度。
@@ -142,7 +157,7 @@ tesseract识别文字偶尔会有误差。可训练以提高。
 
 另由于题目本身原因，部分可能搜索不到答案或搜索有误，需自己留意那些奇怪的问题。
 
-如果你遇到任何问题，可提[Issues](https://github.com/wangtonghe/hq-answer-assist/issues)
+如果你遇到任何问题，可提[Issues](https://github.com/wangtonghe/hq-answer-assist/issues),为方便排查，请注明你的手机型号和分辨率。
 
 如果你有更好的思路，欢迎分享讨论。欢迎贡献代码PR。
 
