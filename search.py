@@ -1,10 +1,14 @@
 # coding=utf-8
-from urllib.request import urlopen
-import urllib.request
-from bs4 import BeautifulSoup
-from multiprocessing import Pool
 import re
+import urllib.request
+from multiprocessing import Pool
+from urllib.request import urlopen
+
+from bs4 import BeautifulSoup
+
 import utils
+
+default_max_wait_time = 3  # 默认最大等待时间3秒
 
 
 def search(question, option_arr, is_negative):
@@ -13,12 +17,8 @@ def search(question, option_arr, is_negative):
     source_1 = pool.apply_async(search_baidu, args=(wd, option_arr))
     source_2 = pool.apply_async(search_zhidao, args=(wd, option_arr))
     pool.close()
-    pool.join()
-    s1 = source_1.get()
-    s2 = source_2.get()
-    print(s1)
-    print(s2)
-    source_arr = utils.over_add(s1, s2)
+    # pool.join()
+    source_arr = get_source(source_1, source_2)
     print('分数统计是：{}'.format(source_arr))
     best_answer = get_result(source_arr, option_arr, is_negative)
     return best_answer
@@ -37,6 +37,8 @@ def search_baidu(question, option_arr):
     result = urlopen(request)
     body = BeautifulSoup(result.read(), 'html5lib')
     content_list = body.find('div', id='content_left')
+    if content_list is None:
+        return [0, 0, 0]
     content_list = content_list.findAll('div')
     for content in content_list:
         content_text = content.get_text()
@@ -53,7 +55,6 @@ def search_baidu(question, option_arr):
             op = option_arr[j]
             if op in result:  # 选项在答案中出现一次，加10分
                 source_arr[j] += 5
-    print('百度统计结束')
     return source_arr
 
 
@@ -93,7 +94,6 @@ def search_zhidao(question, option_arr):
                 source_arr[j] += 10
                 if re.search('[答案|结果|而是].{4}' + op, result) is not None:
                     source_arr[j] += 20
-    print('百度知道统计结束')
     return source_arr
 
 
@@ -108,3 +108,19 @@ def get_result(source_arr, option_arr, is_negate):
     for num in source_arr:
         print(num)
     return best_result
+
+
+def get_source(source_1, source_2):
+    s1, s2 = [], []
+    try:
+        s1 = source_1.get(default_max_wait_time)
+    except BaseException:
+        s1 = [0, 0, 0]
+    try:
+        s2 = source_2.get(default_max_wait_time)
+    except BaseException:
+        s2 = [0, 0, 0]
+    print('百度网页搜索结果:{}'.format(s1))
+    print('百度知道结果：{}.'.format(s2))
+    source_arr = utils.over_add(s1, s2)
+    return source_arr
