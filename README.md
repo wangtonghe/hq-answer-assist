@@ -58,8 +58,6 @@ HQ类答题游戏辅助（python）
 安装教程可百度，Mac安装教程[在这里](http://blog.csdn.net/u010670689/article/details/78374623),其他系统可做参考。
 
 
-> 经测试，百度OCR识别度高且速度快，更推荐使用**
-
 使用百度OCR需在百度云创建应用，具体见[百度云文字识别文档](https://cloud.baidu.com/product/ocr)。
 然后在配置文件`config.json`中配置`baidu_ocr`及`baidu_ocr_config`。
 
@@ -75,6 +73,9 @@ HQ类答题游戏辅助（python）
   }
 }
 ```
+
+> 经测试，百度OCR识别度高且速度快，目前为默认配置。请自行配置百度OCR秘钥等信息**
+
 
 答题时使用USB线连接PC,开启调试模式。目前有两种运行方式：手动和自动。默认为自动。配置在`config.json`中。将`auto`设置`false`则为手动。
 
@@ -96,6 +97,16 @@ HQ类答题游戏辅助（python）
 ![](http://blog.wthfeng.com/img/posts/resource/answer/answer2.png)
 
 ![](http://blog.wthfeng.com/img/posts/resource/answer/answer3.png)
+
+## 征集活动
+
+由于部分题目及搜索原因，该辅助没有给出推荐答案，或是推荐错了，为方便今后改进，
+可在[Issues 6](https://github.com/wangtonghe/hq-answer-assist/issues/6)上贴出出错的问题，以便分析改进。
+优先选取本应搜索到但却失败的**知识性问题**。
+
+## 改进意见
+
+若大家有意见和建议，欢迎提出来一起探讨。多一个人参与项目才会更好。讨论地址 [Issues 7](https://github.com/wangtonghe/hq-answer-assist/issues/7)
 
 
 
@@ -129,16 +140,6 @@ HQ类答题游戏辅助（python）
 
 ![](http://blog.wthfeng.com/img/posts/resource/answer/answer4.png)
 
-
-## 征集活动
-
-由于部分题目及搜索原因，该辅助没有给出推荐答案，或是推荐错了，为方便今后改进，
-可在[Issues 6](https://github.com/wangtonghe/hq-answer-assist/issues/6)上贴出出错的问题，以便分析改进。
-优先选取本应搜索到但却失败的**知识性问题**。
-
-## 改进意见
-
-若大家有意见和建议，欢迎提出来一起探讨。多一个人参与项目才会更好。讨论地址 [Issues 7](https://github.com/wangtonghe/hq-answer-assist/issues/7)
 
 
 ## TODO
