@@ -36,5 +36,15 @@ def test_process():
     print('all done')
 
 
+def test_split():
+    text = '蝴蝶的翅膀'
+    arr = text.split('的')
+    a1, a2 = arr
+    print(a1)
+    if a1 in '蝴蝶哈哈哈哈':
+        print(a1)
+    print(arr)
+
+
 if __name__ == '__main__':
-    test_process()
+    test_split()

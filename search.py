@@ -10,6 +10,8 @@ import utils
 
 default_max_wait_time = 3  # 默认最大等待时间3秒
 
+option_split_word = ['的', '之', '、', '和']
+
 
 def search(question, option_arr, is_negative):
     wd = urllib.request.quote(question)
@@ -90,6 +92,11 @@ def search_zhidao(question, option_arr):
         result = result_list[i]
         for j in range(0, op_num):
             op = option_arr[j]
+            op_arr = split_option(op)  # 对选项进行简单分词搜索，如
+            if op_arr is not None:
+                for op_wd in op_arr:
+                    if op_wd in result:
+                        source_arr[j] += 5
             if op in result:  # 选项在答案中出现一次，加10分
                 source_arr[j] += 10
                 if re.search('[答案|结果|而是].{4}' + op, result) is not None:
@@ -124,3 +131,20 @@ def get_source(source_1, source_2):
     print('百度知道结果：{}.'.format(s2))
     source_arr = utils.over_add(s1, s2)
     return source_arr
+
+
+def split_option(option):
+    option_arr = []
+    for wd in option_split_word:
+        option_arr = option.split(wd)
+        if len(option_arr) > 1:
+            break
+    if len(option_arr) > 1:
+        return option_arr
+    else:
+        return None
+
+
+if __name__ == '__main__':
+    opt = split_option('我和书')
+    print(opt)

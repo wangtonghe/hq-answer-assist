@@ -1,11 +1,13 @@
 # coding=utf-8
 import os
-from PIL import Image
-import pytesseract
-import utils
-import baiduocr
 
-negate_word = ['没有', '不是', '不会', '不包括', '不属于', '无关', '不属于']
+import pytesseract
+from PIL import Image
+
+import baiduocr
+import utils
+
+negate_word = ['没有', '不是', '不会', '不包括', '不属于', '无关', '不属于', '不可能']
 
 auxiliary_word = ['下列', '以下', '哪个', '?']
 
@@ -106,27 +108,27 @@ def analyze_question(question):
             question = question.replace(ele, '')
     return question, is_negate
 
-
-def get_result(result_list, option_arr, question, is_negate):
-    answer_num = len(result_list)
-    op_num = len(option_arr)
-    source_arr = []  # 记录各选项得分
-    for i in range(0, op_num):
-        source_arr.append(0)
-    for i in range(0, answer_num):
-        result = result_list[i]
-        for j in range(0, op_num):
-            op = option_arr[j]
-            if op in result:  # 选项在答案中出现一次，加10分
-                source_arr[j] += 10
-
-    if len(source_arr) == 0 or max(source_arr) == 0:
-        return None
-    if is_negate:
-        best_index = min(source_arr)
-    else:
-        best_index = max(source_arr)
-    best_result = option_arr[source_arr.index(best_index)]
-    for num in source_arr:
-        print(num)
-    return best_result
+#
+# def get_result(result_list, option_arr, question, is_negate):
+#     answer_num = len(result_list)
+#     op_num = len(option_arr)
+#     source_arr = []  # 记录各选项得分
+#     for i in range(0, op_num):
+#         source_arr.append(0)
+#     for i in range(0, answer_num):
+#         result = result_list[i]
+#         for j in range(0, op_num):
+#             op = option_arr[j]
+#             if op in result:  # 选项在答案中出现一次，加10分
+#                 source_arr[j] += 10
+#
+#     if len(source_arr) == 0 or max(source_arr) == 0:
+#         return None
+#     if is_negate:
+#         best_index = min(source_arr)
+#     else:
+#         best_index = max(source_arr)
+#     best_result = option_arr[source_arr.index(best_index)]
+#     for num in source_arr:
+#         print(num)
+#     return best_result
