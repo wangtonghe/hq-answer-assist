@@ -5,9 +5,9 @@ import pytesseract
 import utils
 import baiduocr
 
-negate_word = ['没有', '不是', '不会', '不包括', '不属于']
+negate_word = ['没有', '不是', '不会', '不包括', '不属于', '无关', '不属于']
 
-auxiliary_word = ['下列', '以下']
+auxiliary_word = ['下列', '以下', '哪个', '?']
 
 
 # 分辨是否为答题页面,若是则返回图片对象
@@ -56,6 +56,7 @@ def image_to_str(image_obj, is_baidu_ocr, client):
 # 使用 tesseract_orc识别
 def tesseract_orc(image):
     text = pytesseract.image_to_string(image, lang='chi_sim')
+    print('识别的文字是： {}'.format(text))
     return get_question(text)
 
 
@@ -63,6 +64,7 @@ def tesseract_orc(image):
 def baidu_ocr(name, client):
     try:
         text = baiduocr.image_to_str(name, client)
+        print('识别的文字是： {}'.format(text))
         return text
     except RuntimeError:
         print('请确保百度OCR配置正确')
@@ -82,7 +84,6 @@ def get_question(text):
                 options += '\n' + opt
     if options is not None:
         option_arr_o = options.split('\n')
-        print('原始选项：{}'.format(option_arr_o))
         for op in option_arr_o:
             if op != '' and not op.isspace():
                 if op.startswith('《'):
@@ -91,8 +92,6 @@ def get_question(text):
                     op = op[:-1]
                 option_arr.append(op)
                 print(op)
-    print(question)
-    print(option_arr)
     return question, option_arr
 
 

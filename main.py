@@ -1,9 +1,9 @@
 # coding=utf-8
+import datetime
 import json
 import os
-import datetime
 import time
-import sys
+
 import analyze
 import search
 import utils
@@ -19,6 +19,10 @@ import utils
 
 
 '''
+
+question_sleep_time = 10
+
+default_search_engine = 'www.baidu.com'
 
 
 # 获取配置文件
@@ -54,6 +58,7 @@ def main():
 
     while True:
         while True:
+            print('开始答题')
             img = analyze.tell_and_get_image(is_auto, blank_area_point)
             if img is not None:
                 question_num += 1
@@ -69,25 +74,27 @@ def main():
         start = datetime.datetime.now()  # 记录开始时间
         crop_obj = utils.crop_image(img, question_area_point, crop_img_name)
         question, option_arr, is_negative = analyze.image_to_str(crop_obj, is_baidu_ocr, baidu_ocr_clint)  # 图片转文字
+        print('搜索的题目是：{} '.format(question))
+        print('选项为：{} '.format(option_arr))
         if question is None or question == '':
-            print('\n没有识别题目')
-            exit(-1)
-        result_list = search.search(question)  # 搜索结果
+            print('没有识别题目')
+            continue
+        result_list = search.search(question, option_arr, is_negative)  # 搜索结果
 
-        best_result = search.get_result(result_list, option_arr, question, is_negative)  # 分析结果
-        if best_result is None:
+        if result_list is None:
             print('\n没有答案')
         else:
-            print('最佳答案是： \033[1;31m{}\033[0m'.format(best_result))
+            print('最佳答案是： \033[1;31m{}\033[0m'.format(result_list))
         run_time = (datetime.datetime.now() - start).seconds
         print('本次运行时间为：{}秒'.format(run_time))
         crop_img = crop_obj[0]
         if is_debug:
-            crop_img.save('image/question_{}.png'.format(question_num))
+            img.save('image/question_{}.png'.format(question_num))
         crop_img.close()
         img.close()
         if is_auto:
-            time.sleep(10)  # 每一道题结束，休息10秒
+            print('休息：{}秒后继续'.format(question_sleep_time))
+            time.sleep(question_sleep_time)  # 每一道题结束，休息10秒
         else:
             break
 

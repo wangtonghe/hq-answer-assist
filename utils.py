@@ -1,8 +1,12 @@
 # coding=utf-8
-import subprocess
-import os
 import json
+import os
+import subprocess
+import urllib.request
+import webbrowser
+
 from PIL import Image
+
 import baiduocr
 
 shot_way = 3
@@ -76,7 +80,23 @@ def crop_image(image, crop_area, image_name):
     return crop_img_obj
 
 
+def over_add(arr1, arr2):
+    length = min(len(arr1), len(arr2))
+    arr = []
+    for i in range(0, length):
+        arr.append(0)
+    for i in range(length):
+        arr[i] = arr1[i] + arr2[i]
+    return arr
+
+
 def init_baidu_ocr(ocr_config):
     ocr_config_param = ocr_config['app_id'], ocr_config['api_ley'], ocr_config[
         'secret_key']
     return baiduocr.init_baidu_ocr(ocr_config_param)
+
+
+def open_browser(url, question):
+    wd = urllib.request.quote(question)
+    url = '{}/s?wd={}'.format(url, wd)
+    webbrowser.open(url)

@@ -40,12 +40,15 @@ def get_question_and_options(text):
     # 按照经验，4个结果为1行问题，5、6个为2行问题，6个以上为公布答案
     option_arr = []
     question_str = ''
-    if result_num == 4:
+    if result_num <= 4:
         question_obj = result_arr[:1]
         options_obj = result_arr[1:]
-    elif result_num == 5 or result_num == 6:
+    elif result_num == 5:
         question_obj = result_arr[:2]
         options_obj = result_arr[2:]
+    elif result_num == 6:
+        question_obj = result_arr[:3]
+        options_obj = result_arr[3:]
     else:
         return '', []
     for question in question_obj:

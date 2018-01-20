@@ -1,10 +1,7 @@
 import utils
 import os
 from PIL import Image
-from multiprocessing.dummy import Pool as ThreadPool
-from urllib.request import urlopen
-from bs4 import BeautifulSoup
-import datetime
+from multiprocessing import Process, Queue, Pool
 
 
 # 测试代码
@@ -25,20 +22,19 @@ def test_shot():
     utils.crop_image(backup_img, blank_area_point, 'image/blank_test.png')
 
 
-def test_search():
-    start = datetime.datetime.now()
-    urls = ['http://www.baidu.com', 'http://www.sina.com', 'http://www.qq.com']
-    pool = ThreadPool()
-    results = pool.map(urlopen, urls)
+def run_proc(name):
+    print('这是子进程{}'.format(name))
+
+
+def test_process():
+    print('process {} start'.format(os.getpid()))
+    pool = Pool(2)
+    for i in range(2):
+        pool.apply_async(run_proc(i))
     pool.close()
     pool.join()
-    end = datetime.datetime.now()
-    time = (end - start).microseconds / 1000
-    print('耗时{}毫秒'.format(time))
-    for result in results:
-        body = BeautifulSoup(result.read(), 'html5lib')
-        print(body)
+    print('all done')
 
 
 if __name__ == '__main__':
-    test_search()
+    test_process()
