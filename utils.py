@@ -91,7 +91,7 @@ def over_add(arr1, arr2):
 
 
 def init_baidu_ocr(ocr_config):
-    ocr_config_param = ocr_config['app_id'], ocr_config['api_ley'], ocr_config[
+    ocr_config_param = ocr_config['app_id'], ocr_config['api_key'], ocr_config[
         'secret_key']
     return baiduocr.init_baidu_ocr(ocr_config_param)
 

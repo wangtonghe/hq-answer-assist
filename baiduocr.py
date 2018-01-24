@@ -19,8 +19,8 @@ def image_to_str(name, client):
 
 
 def init_baidu_ocr(baidu_ocr_config):
-    app_id, api_ley, secret_key = baidu_ocr_config
-    client = AipOcr(app_id, api_ley, secret_key)
+    app_id, api_key, secret_key = baidu_ocr_config
+    client = AipOcr(app_id, api_key, secret_key)
     return client
 
 
