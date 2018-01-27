@@ -2,10 +2,10 @@
   "auto": true,
   "baidu_ocr": true,
   "baidu_ocr_config": {
-    "app_id": "xxx",
-    "api_ley": "xxx",
-    "secret_key": "xxx"
+    "app_id": "10686208",
+    "api_key": "km8LXWkqMQX6emsAQBKSIGnz",
+    "secret_key": "SFcamNlAXip38W0MGruU4PnQg3HC67QH"
   },
-  "debug":false,
-  "is_ios":false
+  "debug": true,
+  "is_ios": true
 }
