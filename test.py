@@ -3,6 +3,7 @@ import os
 from PIL import Image
 from multiprocessing import Process, Queue, Pool
 import wda
+import baiduocr
 
 
 # 测试代码
@@ -62,5 +63,15 @@ def test_get_pixel():
     print(config)
 
 
+def test_get_question():
+    obj = {'words_result': [{'words': '11.代表作之一是《蒙娜丽莎的眼'},
+                            {'words': '泪》的歌手是?'}, {'words': '林志颖'},
+                            {'words': '林志炫'}, {'words': '林志玲'}],
+           'log_id': 916087026228727188, 'words_result_num': 5}
+    question, option = baiduocr.get_question_and_options(obj)
+    print(question)
+    print(option)
+
+
 if __name__ == '__main__':
-    test_get_pixel()
+    test_get_question()

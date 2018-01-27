@@ -36,24 +36,9 @@ def get_question_and_options(text):
     if text['words_result_num'] == 0:
         return '', []
     result_arr = text['words_result']
-    result_num = text['words_result_num']
-    # 按照经验，4个结果为1行问题，5、6个为2行问题，8个以上为公布答案
     option_arr = []
     question_str = ''
-    if result_num <= 4:
-        question_obj = result_arr[:1]
-        options_obj = result_arr[1:]
-    elif result_num == 5:
-        question_obj = result_arr[:2]
-        options_obj = result_arr[2:]
-    elif result_num == 6:  # 暂时
-        question_obj = result_arr[:2]
-        options_obj = result_arr[2:]
-    elif result_num == 7 or result_num == 8:
-        question_obj = result_arr[:3]
-        options_obj = result_arr[3:]
-    else:
-        return '', []
+    question_obj, options_obj = get_question(result_arr)
     for question in question_obj:
         word = question['words']
         word = re.sub('^\d+\.*', '', word)
@@ -70,3 +55,33 @@ def get_question_and_options(text):
     print(question_str)
     print(option_arr)
     return question_str, option_arr
+
+
+# 先按'？'分割问题和答案，若无问号，用索引分割
+def get_question(result_arr):
+    result_num = len(result_arr)
+    index = -1
+    question_obj, options_obj = [], []
+    for i, result in enumerate(result_arr):
+        if '?' in result['words']:
+            index = i
+            break
+    if index > -1:
+        question_obj = result_arr[:index + 1]
+        options_obj = result_arr[index + 1:]
+        return question_obj, options_obj
+    else:
+        # 按照经验，4个结果为1行问题，5、6个为2行问题，8个以上为公布答案
+        if result_num <= 4:
+            question_obj = result_arr[:1]
+            options_obj = result_arr[1:]
+        elif result_num == 5:
+            question_obj = result_arr[:2]
+            options_obj = result_arr[2:]
+        elif result_num == 6:  # 暂时
+            question_obj = result_arr[:2]
+            options_obj = result_arr[2:]
+        elif result_num == 7 or result_num == 8:
+            question_obj = result_arr[:3]
+            options_obj = result_arr[3:]
+        return question_obj, options_obj
