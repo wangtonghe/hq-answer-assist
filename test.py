@@ -57,7 +57,7 @@ def test_ios_crop():
 
 
 def test_get_pixel():
-    size = 640, 1136
+    size = 1440, 2560
     config = utils.get_pixel_config(size)
     print(config)
 

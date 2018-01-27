@@ -73,6 +73,7 @@ def main():
                 time.sleep(1)  # 不是题目页面，休眠0.8秒后继续判断
 
         # 获取题目及选项
+        print('发现题目')
         start = datetime.datetime.now()  # 记录开始时间
         crop_obj = utils.crop_image(img, question_area_point, crop_img_name)
         question, option_arr, is_negative = analyze.image_to_str(crop_obj, is_baidu_ocr, baidu_ocr_clint)  # 图片转文字

@@ -15,7 +15,8 @@ auxiliary_word = ['下列', '以下', '哪个', '?']
 # 分辨是否为答题页面,若是则返回图片对象
 def tell_and_get_image(is_auto, black_point, is_ios):
     if is_ios:
-        utils.pull_from_screen_ios()
+        # utils.pull_from_screen_ios()
+        print(is_ios)
     else:
         utils.pull_from_screen()  # 截图
     backup_img = None
@@ -31,10 +32,10 @@ def tell_and_get_image(is_auto, black_point, is_ios):
     is_answer_page = False
     is_end = False
     for w in range(start_x, end_x, 100):  # 根据颜色判断是否是题目页面
-        for h in range(start_y, end_y, 10):
+        for h in range(start_y, end_y, 2):
             pixel = backup_img.getpixel((w, h))  # 获取像素点
             r, y, b = pixel[0], pixel[1], pixel[2]
-            is_answer_page = 0xfa <= r <= 0xff and 0xfa <= y <= 0xff and 0xfa <= b <= 0xff
+            is_answer_page = 0xf9 <= r <= 0xff and 0xf9 <= y <= 0xff and 0xf9 <= b <= 0xff
             if not is_answer_page:
                 is_end = True
                 break

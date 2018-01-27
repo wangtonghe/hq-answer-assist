@@ -37,7 +37,7 @@ def get_question_and_options(text):
         return '', []
     result_arr = text['words_result']
     result_num = text['words_result_num']
-    # 按照经验，4个结果为1行问题，5、6个为2行问题，6个以上为公布答案
+    # 按照经验，4个结果为1行问题，5、6个为2行问题，8个以上为公布答案
     option_arr = []
     question_str = ''
     if result_num <= 4:
@@ -46,7 +46,10 @@ def get_question_and_options(text):
     elif result_num == 5:
         question_obj = result_arr[:2]
         options_obj = result_arr[2:]
-    elif result_num == 6:
+    elif result_num == 6:  # 暂时
+        question_obj = result_arr[:2]
+        options_obj = result_arr[2:]
+    elif result_num == 7 or result_num == 8:
         question_obj = result_arr[:3]
         options_obj = result_arr[3:]
     else:
