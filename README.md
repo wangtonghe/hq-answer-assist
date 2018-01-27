@@ -5,8 +5,8 @@ HQ类答题游戏辅助（python）
 
 如百万英雄、冲顶大会、芝士超人等HQ类答题游戏辅助，可帮你搜索并匹配答案。原理同前一阵大火的[跳一跳辅助](https://github.com/wangshub/wechat_jump_game)类似，将答题页面截图，然后使用图片识别功能转成文字，再放到百度去搜索。
 
-截图使用的是adb,所以目前仅支持android。图片识别有 [tesseract-orc](https://github.com/tesseract-ocr/tesseract)和百度ocr两种方式，
-相对来说百度ocr识别率高，不过有次数限制，而tesseract识别率稍低些，你可以根据自己情况选择。
+截图使用的是adb（对于Android）或wda(对于iOS,须有Mac电脑配合)。图片识别有 [tesseract-orc](https://github.com/tesseract-ocr/tesseract)和百度ocr两种方式，
+相对来说百度ocr识别率高，不过有次数限制，而tesseract识别率稍低些，目前默认使用百度ocr。
 
 具体思路如下：
 
@@ -51,9 +51,10 @@ HQ类答题游戏辅助（python）
 
 使用该脚本需保证以下环境安装
 
-1. python运行环境
-2. android调试工具[ADB](https://developer.android.com/studio/command-line/adb.html?hl=zh-cn),安装Android SDK后可在android_sdk/platform-tools/中找到。其他安装方式百度即可。
-3. python若干类库：PIL(图片库)、BeautifulSoup(网页解析库)、pytesseract（图片文字识别库）、baidu-aip（百度ocr库）。可使用python的pip安装
+1. python运行环境。
+2. 【Android】 android调试工具[ADB](https://developer.android.com/studio/command-line/adb.html?hl=zh-cn),安装Android SDK后可在android_sdk/platform-tools/中找到。其他安装方式百度即可。
+3. 【iOS】安装facebook的iOS测试框架[WebDriverAgent](https://github.com/facebook/WebDriverAgent),具体安装教程详见[iOS 真机如何安装 WebDriverAgent](https://testerhome.com/topics/7220)
+3. python若干类库：PIL(图片库)、BeautifulSoup(网页解析库)、pytesseract（图片文字识别库）、baidu-aip（百度ocr库）、[facebook-wda](https://github.com/openatx/facebook-wda)。可使用python的pip安装。
 4. 文字识别引擎（可选,若使用百度云OCR可不安装）[tesseract-ocr](https://github.com/tesseract-ocr/tesseract)及中文简体语言包[chi_sim.traineddata](https://github.com/tesseract-ocr/tessdata/blob/master/chi_sim.traineddata),
 安装教程可百度，Mac安装教程[在这里](http://blog.csdn.net/u010670689/article/details/78374623),其他系统可做参考。
 
@@ -70,7 +71,9 @@ HQ类答题游戏辅助（python）
     "app_id": "xxx",
     "api_ley": "xxx",
     "secret_key": "xxx"
-  }
+  },
+  "debug": true,
+  "is_ios":false
 }
 ```
 
@@ -87,6 +90,25 @@ HQ类答题游戏辅助（python）
 
 直接运行`python3 main.py`即可。程序会自主判断是否为答题页面。判断成功后自动图片识别并搜索。搜索出答案后停留10秒继续循环判断。目前每0.5秒判断一次。
 
+## 配置文件
+
+配置文件如下所示：
+
+```json
+{
+  "auto": true,
+  "baidu_ocr": true,
+  "baidu_ocr_config": {
+    "app_id": "xxx",
+    "api_key": "xxx",
+    "secret_key": "xxx"
+  },
+  "debug": true,
+  "is_ios": false
+}
+```
+
+其中，`auto`用于设置手动、自动模式；`baidu_ocr`和`baidu_ocr_config`是百度ocr相关配置。`debug`是否开启debug模式，开启后会将每次答题截图信息保存以便分析。`is_ios`默认为`false`,表示为`android`,`true`为iOS。
 
 ## 结果展示
 
@@ -112,7 +134,9 @@ HQ类答题游戏辅助（python）
 
 ## 适配支持
 
-屏幕分辨率适配在`config/`目录下，目前支持`540x960`、`720x1280`、`1080x1920`等分辨率。若没有你手机的分辨率。可在此目录下添加对应文件。格式如下
+屏幕分辨率适配在`config/`目录下，目前支持`540x960`、`640x1136`,`720x1280`、`1080x1920`,`1440x2560`等分辨率。若没有你手机的分辨率。脚本会根据其他分辨率比例自动计算。
+
+分辨率文件配置含义如下
 
 ```json
 
