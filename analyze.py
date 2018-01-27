@@ -7,14 +7,17 @@ from PIL import Image
 import baiduocr
 import utils
 
-negate_word = ['没有', '不是', '不会', '不包括', '不属于', '无关', '不属于', '不可能']
+negate_word = ['没有', '不是', '不会', '不包括', '不属于', '无关', '不可能', '错误']
 
 auxiliary_word = ['下列', '以下', '哪个', '?']
 
 
 # 分辨是否为答题页面,若是则返回图片对象
-def tell_and_get_image(is_auto, black_point):
-    utils.pull_from_screen()  # 截图
+def tell_and_get_image(is_auto, black_point, is_ios):
+    if is_ios:
+        utils.pull_from_screen_ios()
+    else:
+        utils.pull_from_screen()  # 截图
     backup_img = None
     if os.path.exists('image/backup.png'):
         backup_img = Image.open('image/backup.png')
@@ -31,7 +34,7 @@ def tell_and_get_image(is_auto, black_point):
         for h in range(start_y, end_y, 10):
             pixel = backup_img.getpixel((w, h))  # 获取像素点
             r, y, b = pixel[0], pixel[1], pixel[2]
-            is_answer_page = r == 0xff and y == 0xff and b == 0xff
+            is_answer_page = 0xfa <= r <= 0xff and 0xfa <= y <= 0xff and 0xfa <= b <= 0xff
             if not is_answer_page:
                 is_end = True
                 break

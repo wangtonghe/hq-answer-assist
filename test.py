@@ -2,11 +2,12 @@ import utils
 import os
 from PIL import Image
 from multiprocessing import Process, Queue, Pool
+import wda
 
 
 # 测试代码
-def test_shot():
-    size = utils.check_os()
+def test_shot(is_ios):
+    size = utils.check_os(is_ios)
     pixel_json = utils.get_pixel_config(size)
     blank_area = pixel_json['blank_area']
     question_area = pixel_json['question_area']
@@ -16,8 +17,8 @@ def test_shot():
     if os.path.exists('image/backup.png'):
         backup_img = Image.open('image/backup.png')
     else:
-        print('image/backup.png位置图片不存在')
-        exit(-1)
+        utils.pull_from_screen_ios()
+        backup_img = Image.open('image/backup.png')
     utils.crop_image(backup_img, question_area_point, 'image/crop_test.png')
     utils.crop_image(backup_img, blank_area_point, 'image/blank_test.png')
 
@@ -46,5 +47,20 @@ def test_split():
     print(arr)
 
 
+def test_ios_crop():
+    c = wda.Client()
+    c.screenshot('image/screen.png')
+    if os.path.exists('image/screen.png'):
+        ios_img = Image.open('image/screen.png')
+        width, height = ios_img.size
+        print('width:{},height:{}'.format(width, height))
+
+
+def test_get_pixel():
+    size = 640, 1136
+    config = utils.get_pixel_config(size)
+    print(config)
+
+
 if __name__ == '__main__':
-    test_split()
+    test_get_pixel()

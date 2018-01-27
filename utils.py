@@ -4,12 +4,20 @@ import os
 import subprocess
 import urllib.request
 import webbrowser
+import wda
 
 from PIL import Image
 
 import baiduocr
 
 shot_way = 3
+
+wda_client = None
+
+default_screen_pixel_path = 'config/720x1280.json'
+
+default_width = 720
+default_height = 1280
 
 
 # 具体截图方法，按优先级排序
@@ -46,20 +54,42 @@ def pull_from_screen():
         pull_from_screen()
 
 
-# 检查adb是否安装,获取屏幕大小
-def check_os():
-    size_str = os.popen('adb shell wm size').read()
-    if not size_str:
-        print('请安装ADB,并打开调试模式')
-        exit(-1)
+def pull_from_screen_ios():
+    global wda_client
+    if wda_client is None:
+        wda_client = wda.Client()
+    wda_client.screenshot('image/backup.png')
+
+
+# 检查运行环境,获取屏幕大小
+def check_os(is_ios):
+    if is_ios:
+        global wda_client
+        try:
+            if wda_client is None:
+                wda_client = wda.Client()
+            wda_client.screenshot('image/screen.png')
+            ios_img = Image.open('image/screen.png')
+            width, height = ios_img.size
+            print('width:{},height:{}'.format(width, height))
+            size = width, height
+            return size
+        except Exception:
+            print('iOS手机请确保安装WDA')
+            exit(0)
     else:
-        size_x_y = size_str.split(':')[1].strip()
-        x, y = size_x_y.split('x')
-        size = x, y
-        return size
+        size_str = os.popen('adb shell wm size').read()
+        if not size_str:
+            print('Android手机请安装ADB,并打开调试模式')
+            exit(-1)
+        else:
+            size_x_y = size_str.split(':')[1].strip()
+            x, y = size_x_y.split('x')
+            size = x, y
+            return size
 
 
-# 获取分辨率配置文件
+# 获取分辨率配置
 def get_pixel_config(size):
     width, height = size
     config_path = 'config/{}x{}.json'.format(width, height)
@@ -67,8 +97,17 @@ def get_pixel_config(size):
         with open(config_path, 'r') as f:
             return json.load(f)
     else:  # 加载
-        print('请配置对应分辨率')
-        exit(-1)
+        with open(default_screen_pixel_path, 'r') as f:
+            pixel_config = json.load(f)
+            blank_area = pixel_config['blank_area']
+            question_area = pixel_config['question_area']
+            blank_area['x1'], blank_area['y1'] = get_pixel_by_size((blank_area['x1'], blank_area['y1']), size)
+            blank_area['x2'], blank_area['y2'] = get_pixel_by_size((blank_area['x2'], blank_area['y2']), size)
+            question_area['x1'], question_area['y1'] = get_pixel_by_size((question_area['x1'], question_area['y1']),
+                                                                         size)
+            question_area['x2'], question_area['y2'] = get_pixel_by_size((question_area['x2'], question_area['y2']),
+                                                                         size)
+            return pixel_config
 
 
 # 截取图片
@@ -100,3 +139,12 @@ def open_browser(url, question):
     wd = urllib.request.quote(question)
     url = '{}/s?wd={}'.format(url, wd)
     webbrowser.open(url)
+
+
+# 获取各手机实际像素点
+def get_pixel_by_size(old_point, size):
+    x, y = old_point
+    width, height = size
+    new_x = x * width / default_width
+    new_y = y * height / default_height
+    return int(new_x), int(new_y)

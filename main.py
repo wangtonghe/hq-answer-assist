@@ -37,11 +37,13 @@ def get_config():
 
 
 def main():
-    size = utils.check_os()
     config = get_config()
     is_auto = config['auto']
     is_baidu_ocr = config['baidu_ocr']
     is_debug = config['debug']
+    is_ios = config['is_ios']
+    size = utils.check_os(is_ios)
+
     baidu_ocr_clint = None
     if is_baidu_ocr:
         baidu_cor_config = config['baidu_ocr_config']
@@ -59,7 +61,7 @@ def main():
     while True:
         while True:
             print('开始答题')
-            img = analyze.tell_and_get_image(is_auto, blank_area_point)
+            img = analyze.tell_and_get_image(is_auto, blank_area_point, is_ios)
             if img is not None:
                 question_num += 1
                 break
@@ -68,7 +70,7 @@ def main():
                     print('没有发现题目页面')
                     exit(-1)
                 print('没有发现答题页面，继续')
-                time.sleep(0.8)  # 不是题目页面，休眠0.8秒后继续判断
+                time.sleep(1)  # 不是题目页面，休眠0.8秒后继续判断
 
         # 获取题目及选项
         start = datetime.datetime.now()  # 记录开始时间
@@ -90,6 +92,7 @@ def main():
         crop_img = crop_obj[0]
         if is_debug:
             img.save('image/question_{}.png'.format(question_num))
+            crop_img.save('image/question_crop_{}.png'.format(question_num))
         crop_img.close()
         img.close()
         if is_auto:
